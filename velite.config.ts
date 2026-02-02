@@ -19,6 +19,22 @@ const posts = defineCollection({
     })),
 });
 
+const pages = defineCollection({
+  name: "Page",
+  pattern: "pages/*.mdx",
+  schema: s
+    .object({
+      title: s.string().max(100),
+      description: s.string().max(300).optional(),
+      slug: s.path(),
+      content: s.mdx(),
+    })
+    .transform((data) => ({
+      ...data,
+      slug: data.slug.replace(/^pages\//, ""),
+    })),
+});
+
 export default defineConfig({
   root: "content",
   output: {
@@ -28,7 +44,7 @@ export default defineConfig({
     name: "[name]-[hash:6].[ext]",
     clean: true,
   },
-  collections: { posts },
+  collections: { posts, pages },
   mdx: {
     remarkPlugins: [],
     rehypePlugins: [],

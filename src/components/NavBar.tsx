@@ -11,6 +11,12 @@ export default function NavBar() {
           >
             Home
           </Link>
+          <Link
+            href="/about"
+            className="text-stone-600 transition-colors hover:text-stone-900"
+          >
+            about
+          </Link>
         </div>
       </div>
     </nav>
