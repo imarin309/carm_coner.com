@@ -31,7 +31,7 @@ export default function Home() {
                 date={post.date}
                 slug={post.slug}
                 coverImage={post.coverImage}
-                tags={post.tags}
+                category={post.category}
               />
             ))}
           </div>

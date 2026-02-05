@@ -3,6 +3,7 @@ import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
+import { siteName, siteDescription } from "@/constants/meta";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -12,10 +13,10 @@ const notoSansJP = Noto_Sans_JP({
 
 export const metadata: Metadata = {
   title: {
-    default: "Calm Corner",
-    template: "%s | Calm Corner",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description: "プラモデルやフィギュアリペイントの制作記録",
+  description: siteDescription,
 };
 
 export default function RootLayout({
@@ -35,7 +36,7 @@ export default function RootLayout({
         </main>
         <footer className="mt-auto border-t border-stone-200 bg-stone-800 py-6 text-center">
           <p className="text-sm text-stone-400">
-            &copy; {new Date().getFullYear()} Calm Corner
+            &copy; {new Date().getFullYear()} {siteName}
           </p>
         </footer>
       </body>
