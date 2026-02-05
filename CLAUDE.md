@@ -49,15 +49,6 @@ MDXファイルで使用可能なカスタムコンポーネントは`src/compon
 - `<ImageGallery>` - モーダル表示付きの複数画像ギャラリー
 - `<BeforeAfter>` - ドラッグ可能なビフォーアフター比較スライダー
 
-### 画像ホスティング
-
-画像はCloudflare R2でホスティング。`src/lib/r2.ts`のヘルパーを使用:
-
-- `getR2Url(path)` - 完全なR2 URLを取得
-- `getPostImageUrl(slug, filename)` - 記事画像のURLを取得
-
-環境変数`NEXT_PUBLIC_R2_BASE_URL`のデフォルトは`https://r2.calm-corner.com`。
-
 ## 規約
 
 - サイト言語は日本語（`lang="ja"`）

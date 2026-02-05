@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { posts } from "#site/content";
 import { MDXContent } from "@/components/mdx/MDXContent";
-import { getCategoryName } from "@/models/category";
+import { getCategoryName } from "@/constants/category";
 import type { Metadata } from "next";
 
 interface PostPageProps {

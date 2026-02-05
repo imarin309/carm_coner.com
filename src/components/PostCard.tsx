@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCategoryName } from "@/models/category";
+import { getCategoryName } from "@/constants/category";
 
 interface PostCardProps {
   title: string;
