@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "markdownlint-cli2": "^0.20.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "eslint-plugin-mdx": "^3.6.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "turndown": "^7.2.2",
