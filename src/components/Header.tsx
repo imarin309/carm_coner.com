@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { siteName, siteCatchCopy } from "@/constants/meta";
 
 export default function Header() {
   return (
@@ -18,10 +19,10 @@ export default function Header() {
             href="/"
             className="text-2xl font-bold tracking-wider text-white drop-shadow-lg transition-opacity hover:opacity-80 sm:text-3xl"
           >
-            Calm Corner
+            {siteName}
           </Link>
           <p className="mt-1 text-sm tracking-wide text-stone-200 drop-shadow sm:text-base">
-            模型筆塗りの楽しさを広めたい
+            {siteCatchCopy}
           </p>
         </div>
       </div>

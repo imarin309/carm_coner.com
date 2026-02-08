@@ -26,6 +26,14 @@ export async function generateMetadata({
     title: post.title,
     description: post.description,
     robots: post.noindex ? { index: false, follow: false } : undefined,
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.description,
+      ...(post.coverImage && {
+        images: [{ url: post.coverImage }],
+      }),
+    },
   };
 }
 
