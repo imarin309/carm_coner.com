@@ -27,14 +27,15 @@ export default function PostCard({
 
   return (
     <article className="group overflow-hidden border border-stone-200 bg-white transition-all hover:border-stone-300 hover:shadow-lg">
-      <Link href={`/posts/${slug}`}>
+      <Link href={`/posts/${slug}`} className="sm:flex">
         {coverImage && (
-          <div className="relative aspect-video overflow-hidden">
+          <div className="relative overflow-hidden sm:w-72 sm:shrink-0">
             <Image
               src={coverImage}
               alt={title}
-              fill
-              className="object-cover transition-transform group-hover:scale-105"
+              width={1200}
+              height={675}
+              className="h-auto w-full transition-transform group-hover:scale-105"
             />
             <div className="absolute left-0 top-3">
               <span className="bg-stone-800 px-3 py-1 text-xs font-medium text-white">
@@ -43,7 +44,7 @@ export default function PostCard({
             </div>
           </div>
         )}
-        <div className="p-4">
+        <div className="p-4 sm:flex sm:flex-col sm:justify-center">
           <time className="text-xs text-stone-400">
             {formattedDate}
           </time>

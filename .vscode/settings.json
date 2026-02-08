@@ -1,0 +1,8 @@
+{
+    "remote.portsAttributes": {
+        "3000": {
+            "label": "My Dev Server",
+            "onAutoForward": "openPreview" // これが「Simple Browserで開く」という指定です
+        }
+    }
+}

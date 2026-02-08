@@ -10,6 +10,7 @@ const posts = defineCollection({
       date: s.isodate(),
       category: s.string(),
       coverImage: s.string().optional(),
+      noindex: s.boolean().optional().default(false),
       slug: s.path(),
       content: s.mdx(),
     })

@@ -1,19 +1,40 @@
 /**
- * トップページ - 最新記事一覧を表示（1ページ目）
+ * ページネーション - 2ページ目以降の記事一覧
  */
+import { redirect } from "next/navigation";
 import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 import { posts } from "#site/content";
 
 const POSTS_PER_PAGE = 5;
 
-export default function Home() {
-  const sortedPosts = posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+const sortedPosts = posts.sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+);
 
-  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
-  const pagePosts = sortedPosts.slice(0, POSTS_PER_PAGE);
+const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+
+export function generateStaticParams() {
+  // ページ2以降のみ生成（ページ1は / で表示）
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    num: String(i + 2),
+  }));
+}
+
+export default async function PaginatedPage({
+  params,
+}: {
+  params: Promise<{ num: string }>;
+}) {
+  const { num } = await params;
+  const pageNum = Number(num);
+
+  if (pageNum === 1) {
+    redirect("/");
+  }
+
+  const start = (pageNum - 1) * POSTS_PER_PAGE;
+  const pagePosts = sortedPosts.slice(start, start + POSTS_PER_PAGE);
 
   return (
     <div>
@@ -25,7 +46,7 @@ export default function Home() {
 
       <section>
         <h2 className="mb-6 border-b border-stone-200 pb-2 text-lg font-semibold text-stone-700">
-          最新の記事
+          記事一覧 - ページ {pageNum}
         </h2>
         {pagePosts.length > 0 ? (
           <div className="grid gap-6">
@@ -42,13 +63,11 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <p className="text-stone-400">
-            まだ記事がありません。
-          </p>
+          <p className="text-stone-400">記事がありません。</p>
         )}
       </section>
 
-      <Pagination currentPage={1} totalPages={totalPages} />
+      <Pagination currentPage={pageNum} totalPages={totalPages} />
     </div>
   );
 }

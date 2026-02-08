@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev Preview",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting...",
+          "endsPattern": "Ready in"
+        }
+      }
+    },
+    {
+      "label": "Open Simple Browser",
+      "type": "shell",
+      "command": "sleep 3 && open 'http://localhost:3000'",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Dev with Preview",
+      "dependsOn": ["Dev Preview", "Open Simple Browser"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -106,7 +106,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
     .container {
       position: relative;
       display: inline-block;
-      cursor: ns-resize;
+      cursor: move;
     }
     #preview {
       display: block;
@@ -115,22 +115,33 @@ async function processImage(inputPath, currentIndex, totalCount) {
     }
     .overlay {
       position: absolute;
-      left: 0;
-      right: 0;
       background: rgba(0, 0, 0, 0.6);
       pointer-events: none;
     }
-    .overlay-top { top: 0; }
-    .overlay-bottom { bottom: 0; }
+    .overlay-top { top: 0; left: 0; right: 0; }
+    .overlay-bottom { bottom: 0; left: 0; right: 0; }
+    .overlay-left { left: 0; }
+    .overlay-right { right: 0; }
     .crop-area {
       position: absolute;
-      left: 0;
-      right: 0;
       border: 2px dashed #fff;
       pointer-events: none;
     }
+    .mode-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+    }
+    .btn-mode {
+      background: #444;
+      color: #aaa;
+    }
+    .btn-mode.active {
+      background: #2196F3;
+      color: white;
+    }
     .controls {
-      margin-top: 20px;
+      margin-top: 15px;
       display: flex;
       gap: 10px;
     }
@@ -168,13 +179,22 @@ async function processImage(inputPath, currentIndex, totalCount) {
     <p class="progress">${currentIndex + 1} / ${totalCount} 件</p>
     <p class="filename">${inputParsed.base}</p>
   </div>
-  <p class="info">ドラッグで上下に移動 | 出力: ${TARGET_WIDTH}x${TARGET_HEIGHT}px (16:9)</p>
+  <p class="info" id="infoText">ドラッグで移動 | 出力: ${TARGET_WIDTH}x${TARGET_HEIGHT}px (16:9)</p>
 
   <div class="container" id="container">
     <img id="preview" src="/image" alt="Preview">
     <div class="overlay overlay-top" id="overlayTop"></div>
     <div class="overlay overlay-bottom" id="overlayBottom"></div>
+    <div class="overlay overlay-left" id="overlayLeft"></div>
+    <div class="overlay overlay-right" id="overlayRight"></div>
     <div class="crop-area" id="cropArea"></div>
+  </div>
+
+  <div class="mode-buttons" id="modeButtons">
+    <button class="btn-mode active" onclick="setMode(0)">横長 16:9</button>
+    <button class="btn-mode" onclick="setMode(1)">横長 3:2</button>
+    <button class="btn-mode" onclick="setMode(2)">縦長 3:4</button>
+    <button class="btn-mode" onclick="setMode(3)">縦長 3:2</button>
   </div>
 
   <div class="controls">
@@ -190,49 +210,89 @@ async function processImage(inputPath, currentIndex, totalCount) {
     const preview = document.getElementById('preview');
     const overlayTop = document.getElementById('overlayTop');
     const overlayBottom = document.getElementById('overlayBottom');
+    const overlayLeft = document.getElementById('overlayLeft');
+    const overlayRight = document.getElementById('overlayRight');
     const cropArea = document.getElementById('cropArea');
     const status = document.getElementById('status');
+    const infoText = document.getElementById('infoText');
+    const modeButtons = document.getElementById('modeButtons').querySelectorAll('.btn-mode');
 
     const originalWidth = ${imageWidth};
     const originalHeight = ${imageHeight};
-    const targetRatio = ${TARGET_WIDTH} / ${TARGET_HEIGHT};
+    const MODES = [
+      { w: ${TARGET_WIDTH}, h: ${TARGET_HEIGHT} },
+      { w: 1200, h: 800 },
+      { w: 800,  h: 1067 },
+      { w: 800,  h: 1200 },
+    ];
 
+    let modeIndex = 0;
     let displayWidth, displayHeight;
-    let cropHeight, cropY;
+    let cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
     let isDragging = false;
-    let startY, startCropY;
+    let startPos, startCropPos;
 
     preview.onload = () => {
       displayWidth = preview.offsetWidth;
       displayHeight = preview.offsetHeight;
-
-      cropHeight = displayWidth / targetRatio;
-      if (cropHeight > displayHeight) {
-        cropHeight = displayHeight;
-      }
-
-      cropY = (displayHeight - cropHeight) / 2;
-      updateOverlay();
+      recalcCrop();
     };
 
+    function currentMode() { return MODES[modeIndex]; }
+
+    function recalcCrop() {
+      const m = currentMode();
+      const ratio = m.w / m.h;
+      cropWidth = displayWidth;
+      cropHeight = displayWidth / ratio;
+      if (cropHeight > displayHeight) {
+        cropHeight = displayHeight;
+        cropWidth = displayHeight * ratio;
+      }
+      cropX = (displayWidth - cropWidth) / 2;
+      cropY = (displayHeight - cropHeight) / 2;
+      updateOverlay();
+    }
+
     function updateOverlay() {
+      cropArea.style.top = cropY + 'px';
+      cropArea.style.left = cropX + 'px';
+      cropArea.style.width = cropWidth + 'px';
+      cropArea.style.height = cropHeight + 'px';
+
       overlayTop.style.height = cropY + 'px';
       overlayBottom.style.height = (displayHeight - cropY - cropHeight) + 'px';
-      cropArea.style.top = cropY + 'px';
-      cropArea.style.height = cropHeight + 'px';
+      overlayLeft.style.top = cropY + 'px';
+      overlayLeft.style.width = cropX + 'px';
+      overlayLeft.style.height = cropHeight + 'px';
+      overlayRight.style.top = cropY + 'px';
+      overlayRight.style.width = (displayWidth - cropX - cropWidth) + 'px';
+      overlayRight.style.height = cropHeight + 'px';
+    }
+
+    function setMode(index) {
+      modeIndex = index;
+      modeButtons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+      const m = currentMode();
+      infoText.textContent = 'ドラッグで移動 | 出力: ' + m.w + 'x' + m.h + 'px';
+      recalcCrop();
     }
 
     container.addEventListener('mousedown', (e) => {
       isDragging = true;
-      startY = e.clientY;
-      startCropY = cropY;
+      startPos = { x: e.clientX, y: e.clientY };
+      startCropPos = { x: cropX, y: cropY };
       e.preventDefault();
     });
 
     document.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
-      const deltaY = e.clientY - startY;
-      cropY = Math.max(0, Math.min(displayHeight - cropHeight, startCropY + deltaY));
+      const dx = e.clientX - startPos.x;
+      const dy = e.clientY - startPos.y;
+      cropX = Math.max(0, Math.min(displayWidth - cropWidth, startCropPos.x + dx));
+      cropY = Math.max(0, Math.min(displayHeight - cropHeight, startCropPos.y + dy));
       updateOverlay();
     });
 
@@ -240,21 +300,40 @@ async function processImage(inputPath, currentIndex, totalCount) {
       isDragging = false;
     });
 
+    function waitAndReload() {
+      setTimeout(async () => {
+        try {
+          const res = await fetch('/');
+          if (res.ok) location.reload();
+          else waitAndReload();
+        } catch {
+          waitAndReload();
+        }
+      }, 300);
+    }
+
     async function confirm() {
       status.textContent = '処理中...';
-      const scale = originalHeight / displayHeight;
-      const extractTop = Math.round(cropY * scale);
-      const extractHeight = Math.round(cropHeight * scale);
+      const scaleX = originalWidth / displayWidth;
+      const scaleY = originalHeight / displayHeight;
 
       try {
         const response = await fetch('/convert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ top: extractTop, height: extractHeight })
+          body: JSON.stringify({
+            top: Math.round(cropY * scaleY),
+            left: Math.round(cropX * scaleX),
+            width: Math.round(cropWidth * scaleX),
+            height: Math.round(cropHeight * scaleY),
+            targetW: currentMode().w,
+            targetH: currentMode().h
+          })
         });
         const result = await response.json();
         if (result.success) {
           status.textContent = '完了！次の画像を読み込み中...';
+          waitAndReload();
         } else {
           status.textContent = 'エラー: ' + result.error;
         }
@@ -266,6 +345,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
     async function skip() {
       status.textContent = 'スキップ...';
       await fetch('/skip', { method: 'POST' });
+      waitAndReload();
     }
 
     function cancel() {
@@ -289,20 +369,16 @@ async function processImage(inputPath, currentIndex, totalCount) {
         req.on("data", (chunk) => (body += chunk));
         req.on("end", async () => {
           try {
-            const { top, height } = JSON.parse(body);
-            const extractWidth = Math.round(
-              height * (TARGET_WIDTH / TARGET_HEIGHT)
-            );
-            const extractLeft = Math.round((imageWidth - extractWidth) / 2);
+            const { top, left, width, height, targetW, targetH } = JSON.parse(body);
 
             await sharp(inputPath)
               .extract({
-                left: Math.max(0, extractLeft),
+                left: Math.max(0, left),
                 top: Math.max(0, top),
-                width: Math.min(extractWidth, imageWidth),
-                height: Math.min(height, imageHeight - top),
+                width: Math.min(width, imageWidth - Math.max(0, left)),
+                height: Math.min(height, imageHeight - Math.max(0, top)),
               })
-              .resize(TARGET_WIDTH, TARGET_HEIGHT)
+              .resize(targetW, targetH)
               .webp({ quality: QUALITY })
               .toFile(outputPath);
 
