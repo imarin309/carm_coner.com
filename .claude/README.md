@@ -19,6 +19,18 @@ Claude Codeで使用できるカスタムスラッシュコマンドの一覧で
 
 各項目を ✅ / ⚠️ / ❌ で判定し、改善案を提示します。
 
+### `/collab-writing` - 壁打ち執筆サポート
+
+記事の内容を読み、フィードバック・質問→リライト案の提示→セクションごとの確認という流れで、対話しながら記事を仕上げます。
+
+```bash
+/collab-writing content/pages/about.mdx
+```
+
+- 全体フィードバックと不足情報のヒアリング
+- リライト案を提示し、OKならファイルに反映
+- 1セクションずつ順番に確認・修正
+
 ### `/gen-description` - description生成
 
 記事の内容を読み取り、SEO向けのメタディスクリプションを生成してフロントマターに書き込みます。
@@ -35,6 +47,7 @@ Claude Codeで使用できるカスタムスラッシュコマンドの一覧で
 | ファイル | 説明 |
 |---|---|
 | `commands/review-content.md` | 記事レビュースキル定義 |
+| `commands/collab-writing.md` | 壁打ち執筆サポートスキル定義 |
 | `commands/gen-description.md` | description生成スキル定義 |
 | `content_review.md` | レビューチェックリスト（スキルから参照） |
 | `CLAUDE.md` | プロジェクト全体のガイダンス |

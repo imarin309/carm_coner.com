@@ -17,12 +17,6 @@ export default function Home() {
 
   return (
     <div>
-      <section className="mb-10 text-center">
-        <p className="text-stone-500">
-          プラモデルやフィギュアリペイントの制作記録
-        </p>
-      </section>
-
       <section>
         <h2 className="mb-6 border-b border-stone-200 pb-2 text-lg font-semibold text-stone-700">
           最新の記事
