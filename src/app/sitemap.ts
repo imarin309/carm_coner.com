@@ -12,8 +12,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(post.date),
     }));
 
+  const latestPost = posts
+    .filter((post) => !post.noindex)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .at(0);
+
   return [
-    { url: siteUrl, lastModified: new Date() },
+    {
+      url: siteUrl,
+      ...(latestPost && { lastModified: new Date(latestPost.date) }),
+    },
     { url: `${siteUrl}/about` },
     ...postEntries,
   ];
