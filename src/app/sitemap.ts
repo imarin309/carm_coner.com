@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ...(latestPost && { lastModified: new Date(latestPost.date) }),
     },
     { url: `${siteUrl}/about` },
+    { url: `${siteUrl}/privacy-policy` },
     ...postEntries,
   ];
 }
