@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
 import { siteName, siteDescription, siteUrl } from "@/constants/meta";
@@ -36,6 +37,11 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -54,7 +60,13 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="mt-auto border-t border-stone-200 bg-stone-800 py-6 text-center">
-          <p className="text-sm text-stone-400">
+          <Link
+            href="/privacy-policy"
+            className="text-xs text-stone-500 underline transition-colors hover:text-stone-300"
+          >
+            プライバシーポリシー
+          </Link>
+          <p className="mt-2 text-sm text-stone-400">
             &copy; {new Date().getFullYear()} {siteName}
           </p>
         </footer>
