@@ -13,9 +13,15 @@ function escapeXml(str: string): string {
 }
 
 export function GET() {
-  const feedItems = posts
+  const sortedPosts = posts
     .filter((post) => !post.noindex)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const lastBuildDate = sortedPosts[0]
+    ? new Date(sortedPosts[0].date).toUTCString()
+    : new Date().toUTCString();
+
+  const feedItems = sortedPosts
     .map(
       (post) => `    <item>
       <title>${escapeXml(post.title)}</title>
@@ -33,6 +39,7 @@ export function GET() {
     <link>${siteUrl}</link>
     <description>${escapeXml(siteDescription)}</description>
     <language>ja</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
 ${feedItems}
   </channel>

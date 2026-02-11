@@ -37,6 +37,11 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -46,14 +51,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <head>
-        <link
-          rel="alternate"
-          type="application/rss+xml"
-          title={siteName}
-          href="/feed.xml"
-        />
-      </head>
       <body
         className={`${notoSansJP.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
