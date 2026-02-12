@@ -29,13 +29,13 @@ export default function PostCard({
     <article className="group overflow-hidden border border-stone-200 bg-white transition-all hover:border-stone-300 hover:shadow-lg">
       <Link href={`/posts/${slug}`} className="sm:flex">
         {coverImage && (
-          <div className="relative overflow-hidden sm:w-72 sm:shrink-0">
+          <div className="relative aspect-[1200/675] overflow-hidden sm:w-72 sm:shrink-0">
             <Image
               src={coverImage}
               alt={title}
-              width={1200}
-              height={675}
-              className="h-auto w-full transition-transform group-hover:scale-105"
+              fill
+              sizes="(min-width: 640px) 288px, 100vw"
+              className="object-cover transition-transform group-hover:scale-105"
             />
             <div className="absolute left-0 top-3">
               <span className="bg-stone-800 px-3 py-1 text-xs font-medium text-white">
