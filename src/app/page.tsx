@@ -4,8 +4,7 @@
 import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 import { posts } from "#site/content";
-
-const POSTS_PER_PAGE = 5;
+import { POSTS_PER_PAGE } from "@/constants/config";
 
 export default function Home() {
   const sortedPosts = posts.sort(

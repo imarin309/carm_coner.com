@@ -4,9 +4,9 @@ export type Category = {
 };
 
 export const categories: Category[] = [
-  { slug: "gunpla", name: "ガンプラ制作" },
-  { slug: "girls-plamo", name: "美プラ制作" },
-  { slug: "figure", name: "フィギュアリペイント制作" },
+  { slug: "gunpla", name: "ガンプラ" },
+  { slug: "girls-plamo", name: "美プラ" },
+  { slug: "figure", name: "フィギュアリペイント" },
   { slug: "other", name: "その他" },
 ];
 

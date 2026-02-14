@@ -6,8 +6,7 @@ import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 import { posts } from "#site/content";
 import { getAllCategories, getCategoryBySlug } from "@/constants/category";
-
-const POSTS_PER_PAGE = 5;
+import { POSTS_PER_PAGE } from "@/constants/config";
 
 export function generateStaticParams() {
   const allParams: { category_name: string; num: string }[] = [];

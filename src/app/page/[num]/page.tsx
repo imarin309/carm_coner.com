@@ -5,8 +5,7 @@ import { redirect } from "next/navigation";
 import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 import { posts } from "#site/content";
-
-const POSTS_PER_PAGE = 5;
+import { POSTS_PER_PAGE } from "@/constants/config";
 
 const sortedPosts = posts.sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
