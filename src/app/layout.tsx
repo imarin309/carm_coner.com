@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import RecommendedPosts from "@/components/RecommendedPosts";
 import GoogleAdSense from "@/components/google/GoogleAdSense";
 import GoogleAnalytics from "@/components/google/GoogleAnalytics";
 import { siteName, siteDescription, siteUrl } from "@/constants/meta";
@@ -61,6 +62,7 @@ export default function RootLayout({
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
           {children}
         </main>
+        <RecommendedPosts />
         <Footer />
         <GoogleAnalytics />
         <GoogleAdSense />
