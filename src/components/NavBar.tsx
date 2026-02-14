@@ -52,6 +52,7 @@ export default function NavBar() {
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
+        if (currentIndex < 0) return;
         itemRefs.current[(currentIndex + 1) % categories.length]?.focus();
         break;
       case "ArrowUp":
