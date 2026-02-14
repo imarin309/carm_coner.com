@@ -24,6 +24,12 @@ export default function ImageGallery({
     4: "grid-cols-1 sm:grid-cols-2 md:grid-cols-4",
   };
 
+  const imageSizes = {
+    2: "(min-width: 640px) 50vw, 100vw",
+    3: "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw",
+    4: "(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw",
+  };
+
   return (
     <>
       <div className={`not-prose my-6 grid gap-4 ${gridCols[columns]}`}>
@@ -37,6 +43,7 @@ export default function ImageGallery({
                 src={image.src}
                 alt={image.alt}
                 fill
+                sizes={imageSizes[columns]}
                 className="m-0 object-cover transition-transform hover:scale-105"
               />
             </button>
