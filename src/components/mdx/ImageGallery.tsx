@@ -9,22 +9,22 @@ interface ImageGalleryProps {
     alt: string;
     caption?: string;
   }[];
-  columns?: 2 | 3 | 4;
 }
 
-export default function ImageGallery({
-  images,
-  columns = 3,
-}: ImageGalleryProps) {
+export default function ImageGallery({ images }: ImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
+  const columns = Math.min(images.length, 4) as 1 | 2 | 3 | 4;
+
   const gridCols = {
+    1: "grid-cols-1",
     2: "grid-cols-1 sm:grid-cols-2",
     3: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
     4: "grid-cols-1 sm:grid-cols-2 md:grid-cols-4",
   };
 
   const imageSizes = {
+    1: "100vw",
     2: "(min-width: 640px) 50vw, 100vw",
     3: "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw",
     4: "(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw",
