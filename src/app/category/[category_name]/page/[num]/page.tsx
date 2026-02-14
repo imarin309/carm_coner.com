@@ -2,8 +2,7 @@
  * カテゴリー別記事一覧 - ページネーション（2ページ目以降）
  */
 import { redirect, notFound } from "next/navigation";
-import PostCard from "@/components/PostCard";
-import Pagination from "@/components/Pagination";
+import PostList from "@/components/PostList";
 import { posts } from "#site/content";
 import { getAllCategories, getCategoryBySlug } from "@/constants/category";
 import { POSTS_PER_PAGE } from "@/constants/config";
@@ -56,35 +55,12 @@ export default async function CategoryPaginatedPage({
   const pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
 
   return (
-    <div>
-      <section>
-        <h2 className="mb-6 border-b border-stone-200 pb-2 text-lg font-semibold text-stone-700">
-          {category.name}の記事一覧 - ページ {pageNum}
-        </h2>
-        {pagePosts.length > 0 ? (
-          <div className="grid gap-6">
-            {pagePosts.map((post) => (
-              <PostCard
-                key={post.slug}
-                title={post.title}
-                description={post.description}
-                date={post.date}
-                slug={post.slug}
-                coverImage={post.coverImage}
-                category={post.category}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-stone-400">記事がありません。</p>
-        )}
-      </section>
-
-      <Pagination
-        currentPage={pageNum}
-        totalPages={totalPages}
-        basePath={`/category/${category_name}`}
-      />
-    </div>
+    <PostList
+      posts={pagePosts}
+      title={`${category.name}の記事一覧 - ページ ${pageNum}`}
+      currentPage={pageNum}
+      totalPages={totalPages}
+      basePath={`/category/${category_name}`}
+    />
   );
 }

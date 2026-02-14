@@ -3,8 +3,7 @@
  */
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import PostCard from "@/components/PostCard";
-import Pagination from "@/components/Pagination";
+import PostList from "@/components/PostList";
 import { posts } from "#site/content";
 import { getAllCategories, getCategoryBySlug } from "@/constants/category";
 import { POSTS_PER_PAGE } from "@/constants/config";
@@ -48,37 +47,12 @@ export default async function CategoryPage({
   const pagePosts = filteredPosts.slice(0, POSTS_PER_PAGE);
 
   return (
-    <div>
-      <section>
-        <h2 className="mb-6 border-b border-stone-200 pb-2 text-lg font-semibold text-stone-700">
-          {category.name}の記事一覧
-        </h2>
-        {pagePosts.length > 0 ? (
-          <div className="grid gap-6">
-            {pagePosts.map((post) => (
-              <PostCard
-                key={post.slug}
-                title={post.title}
-                description={post.description}
-                date={post.date}
-                slug={post.slug}
-                coverImage={post.coverImage}
-                category={post.category}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-stone-400">
-            このカテゴリーにはまだ記事がありません。
-          </p>
-        )}
-      </section>
-
-      <Pagination
-        currentPage={1}
-        totalPages={totalPages}
-        basePath={`/category/${category_name}`}
-      />
-    </div>
+    <PostList
+      posts={pagePosts}
+      title={`${category.name}の記事一覧`}
+      currentPage={1}
+      totalPages={totalPages}
+      basePath={`/category/${category_name}`}
+    />
   );
 }
