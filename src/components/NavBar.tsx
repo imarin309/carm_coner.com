@@ -82,7 +82,16 @@ export default function NavBar() {
           >
             Home
           </Link>
-          <div ref={menuRef} className="group relative">
+          <div
+            ref={menuRef}
+            className="relative"
+            onMouseEnter={() => setIsOpen(true)}
+            onMouseLeave={() => {
+              if (!menuRef.current?.contains(document.activeElement)) {
+                setIsOpen(false);
+              }
+            }}
+          >
             <button
               ref={buttonRef}
               aria-expanded={isOpen}
@@ -97,7 +106,7 @@ export default function NavBar() {
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
                 isOpen
                   ? "visible opacity-100"
-                  : "invisible opacity-0 group-hover:visible group-hover:opacity-100"
+                  : "invisible opacity-0"
               }`}
             >
               <ul
