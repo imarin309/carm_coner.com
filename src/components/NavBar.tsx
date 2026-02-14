@@ -16,7 +16,7 @@ export default function NavBar() {
           </Link>
           <div className="group relative">
             <button className="text-stone-600 transition-colors hover:text-stone-900">
-              category
+              Category
             </button>
             <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
               <ul className="min-w-40 border border-stone-200 bg-white py-1 shadow-md">
