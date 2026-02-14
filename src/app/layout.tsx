@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 import GoogleAdSense from "@/components/google/GoogleAdSense";
 import GoogleAnalytics from "@/components/google/GoogleAnalytics";
 import { siteName, siteDescription, siteUrl } from "@/constants/meta";
@@ -61,17 +61,7 @@ export default function RootLayout({
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
           {children}
         </main>
-        <footer className="mt-auto border-t border-stone-200 bg-stone-800 py-6 text-center">
-          <Link
-            href="/privacy-policy"
-            className="text-xs text-stone-500 underline transition-colors hover:text-stone-300"
-          >
-            プライバシーポリシー
-          </Link>
-          <p className="mt-2 text-sm text-stone-400">
-            &copy; {new Date().getFullYear()} {siteName}
-          </p>
-        </footer>
+        <Footer />
         <GoogleAnalytics />
         <GoogleAdSense />
       </body>
