@@ -3,13 +3,21 @@ import Link from "next/link";
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  basePath?: string;
 }
 
-export default function Pagination({ currentPage, totalPages }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  const prevHref = currentPage === 2 ? "/" : `/page/${currentPage - 1}`;
-  const nextHref = `/page/${currentPage + 1}`;
+  const pageHref = (page: number) => {
+    if (basePath) {
+      return page === 1 ? basePath : `${basePath}/page/${page}`;
+    }
+    return page === 1 ? "/" : `/page/${page}`;
+  };
+
+  const prevHref = pageHref(currentPage - 1);
+  const nextHref = pageHref(currentPage + 1);
 
   return (
     <nav aria-label="ページネーション" className="mt-10 flex items-center justify-center gap-4">

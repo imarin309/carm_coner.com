@@ -6,7 +6,8 @@
     "dev": "velite --watch & next dev",
     "build": "velite && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && markdownlint-cli2 \"content/**/*.mdx\"",
+    "format": "eslint --fix && markdownlint-cli2 --fix \"content/**/*.mdx\"",
     "velite": "velite"
   },
   "dependencies": {
