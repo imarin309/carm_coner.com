@@ -53,8 +53,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <GoogleAnalytics />
-      <GoogleAdSense />
       <body
         className={`${notoSansJP.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
@@ -74,6 +72,8 @@ export default function RootLayout({
             &copy; {new Date().getFullYear()} {siteName}
           </p>
         </footer>
+        <GoogleAnalytics />
+        <GoogleAdSense />
       </body>
     </html>
   );
