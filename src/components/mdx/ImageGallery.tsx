@@ -49,7 +49,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                   width={1200}
                   height={800}
                   sizes={imageSizes[columns]}
-                  className="m-0 h-auto w-full rounded-lg transition-transform hover:scale-105"
+                  className="m-0 max-h-[70vh] h-auto w-auto max-w-full mx-auto rounded-lg transition-transform hover:scale-105"
                 />
               ) : (
                 <Image
