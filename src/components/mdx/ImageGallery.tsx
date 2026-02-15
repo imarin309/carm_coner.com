@@ -122,7 +122,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
           </button>
 
           <div
-            className="flex max-h-[90vh] max-w-[90vw] flex-col items-center"
+            className="flex max-h-[90vh] max-w-[90vw] flex-col items-center overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
