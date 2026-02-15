@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import PostCardCompact from "./PostCardCompact";
 
@@ -34,10 +34,14 @@ export default function RecommendedPostsClient({
   selectPosts = randomSelect,
 }: RecommendedPostsClientProps) {
   const pathname = usePathname();
-  const selected = useMemo(() => {
-    // pathname is referenced so that recommendations are re-shuffled on navigation
-    void pathname;
-    return selectPosts(posts, count);
+
+  // Use a deterministic initial selection (first N posts) to avoid hydration mismatch,
+  // then shuffle on the client after mount.
+  const initial = posts.slice(0, count);
+  const [selected, setSelected] = useState<PostSummary[]>(initial);
+
+  useEffect(() => {
+    setSelected(selectPosts(posts, count));
   }, [posts, count, selectPosts, pathname]);
 
   if (selected.length === 0) return null;
