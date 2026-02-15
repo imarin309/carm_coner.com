@@ -32,21 +32,34 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
 
   return (
     <>
-      <div className={`not-prose my-6 grid gap-4 ${gridCols[columns]}`}>
+      <div
+        className={`not-prose my-6 grid gap-4 ${gridCols[columns]}${columns === 1 ? " mx-auto max-w-2xl" : ""}`}
+      >
         {images.map((image, index) => (
           <figure key={index} className="m-0">
             <button
               type="button"
               onClick={() => setSelectedIndex(index)}
-              className="relative aspect-square w-full overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`relative w-full overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500${columns === 1 ? "" : " aspect-square"}`}
             >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                sizes={imageSizes[columns]}
-                className="m-0 object-cover transition-transform hover:scale-105"
-              />
+              {columns === 1 ? (
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={1200}
+                  height={800}
+                  sizes={imageSizes[columns]}
+                  className="m-0 max-h-[70vh] h-auto w-auto max-w-full mx-auto rounded-lg transition-transform hover:scale-105"
+                />
+              ) : (
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes={imageSizes[columns]}
+                  className="m-0 object-cover transition-transform hover:scale-105"
+                />
+              )}
             </button>
             {image.caption && (
               <figcaption className="mt-1 text-center text-sm italic text-stone-500">
