@@ -52,6 +52,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("CF_PAGES_BRANCH", process.env.CF_PAGES_BRANCH)
   return (
     <html lang="ja">
       <body
@@ -64,7 +65,8 @@ export default function RootLayout({
         </main>
         <RecommendedPosts />
         <Footer />
-        {process.env.NODE_ENV === "production" && <GoogleAnalytics />}
+        {process.env.NODE_ENV === "production" &&
+          process.env.CF_PAGES_BRANCH === "main" && <GoogleAnalytics />}
         <GoogleAdSense />
       </body>
     </html>
