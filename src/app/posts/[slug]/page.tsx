@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { posts } from "#site/content";
 import { MDXContent } from "@/components/mdx/MDXContent";
 import { getCategoryName } from "@/constants/category";
+import { siteName, siteUrl, siteAuthor } from "@/constants/meta";
 import type { Metadata } from "next";
 
 interface PostPageProps {
@@ -60,23 +61,49 @@ export default async function PostPage({ params }: PostPageProps) {
     day: "numeric",
   });
 
-  return (
-    <article className="mx-auto max-w-3xl">
-      <header className="mb-8 border-b border-stone-200 pb-6">
-        <time className="text-xs text-stone-400">{formattedDate}</time>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-stone-800 sm:text-3xl">
-          {post.title}
-        </h1>
-        <div className="mt-4">
-          <span className="bg-stone-800 px-3 py-1 text-xs text-white">
-            {getCategoryName(post.category)}
-          </span>
-        </div>
-      </header>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    datePublished: new Date(post.date).toISOString(),
+    url: `${siteUrl}/posts/${post.slug}`,
+    ...(post.coverImage && { image: post.coverImage }),
+    author: {
+      "@type": "Person",
+      name: siteAuthor,
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl,
+    },
+  };
 
-      <div className="prose prose-stone max-w-none prose-headings:font-semibold prose-a:text-stone-600 prose-a:underline-offset-2 hover:prose-a:text-stone-900">
-        <MDXContent code={post.content} />
-      </div>
-    </article>
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <article className="mx-auto max-w-3xl">
+        <header className="mb-8 border-b border-stone-200 pb-6">
+          <time className="text-xs text-stone-400">{formattedDate}</time>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-stone-800 sm:text-3xl">
+            {post.title}
+          </h1>
+          <div className="mt-4">
+            <span className="bg-stone-800 px-3 py-1 text-xs text-white">
+              {getCategoryName(post.category)}
+            </span>
+          </div>
+        </header>
+
+        <div className="prose prose-stone max-w-none prose-headings:font-semibold prose-a:text-stone-600 prose-a:underline-offset-2 hover:prose-a:text-stone-900">
+          <MDXContent code={post.content} />
+        </div>
+      </article>
+    </>
   );
 }

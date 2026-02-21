@@ -7,7 +7,12 @@ import Footer from "@/components/Footer";
 import RecommendedPosts from "@/components/RecommendedPosts";
 import GoogleAdSense from "@/components/google/GoogleAdSense";
 import GoogleAnalytics from "@/components/google/GoogleAnalytics";
-import { siteName, siteDescription, siteUrl } from "@/constants/meta";
+import {
+  siteName,
+  siteDescription,
+  siteUrl,
+  siteAuthor,
+} from "@/constants/meta";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -47,6 +52,19 @@ export const metadata: Metadata = {
   },
 };
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteName,
+  url: siteUrl,
+  description: siteDescription,
+  author: {
+    "@type": "Person",
+    name: siteAuthor,
+    url: siteUrl,
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -57,6 +75,10 @@ export default function RootLayout({
       <body
         className={`${notoSansJP.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Header />
         <NavBar />
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
