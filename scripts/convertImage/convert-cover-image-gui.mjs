@@ -68,7 +68,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
   }
 
   const inputParsed = path.parse(inputPath);
-  const outputFileName = `${inputParsed.name}_edited.webp`;
+  const outputFileName = `${inputParsed.name}.webp`;
   const outputPath = path.join(OUTPUT_DIR, outputFileName);
 
   const metadata = await sharp(inputPath).metadata();
@@ -200,7 +200,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
   </div>
 
   <div class="controls">
-    <button class="btn-confirm" onclick="confirm()">この範囲で切り取る</button>
+    <button class="btn-confirm" onclick="confirmCrop()">この範囲で切り取る</button>
     <button class="btn-skip" onclick="skip()">スキップ</button>
     <button class="btn-cancel" onclick="cancel()">全てキャンセル</button>
   </div>
@@ -314,7 +314,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
       }, 300);
     }
 
-    async function confirm() {
+    async function confirmCrop() {
       status.textContent = '処理中...';
       const scaleX = originalWidth / displayWidth;
       const scaleY = originalHeight / displayHeight;
