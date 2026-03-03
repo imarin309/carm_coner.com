@@ -41,6 +41,54 @@
   vertical-align: middle;
 }
 
+/* テキストサイズディレクティブ (:large[], :xl[], :sm[]) */
+.prose .directive-large,
+.directive-large {
+  font-size: 1.25em;
+}
+.prose .directive-xl,
+.directive-xl {
+  font-size: 1.5em;
+}
+.prose .directive-sm,
+.directive-sm {
+  font-size: 0.85em;
+}
+
+/* テキストカラーディレクティブ (:red[], :blue[], :green[], etc.) */
+.prose .directive-red,
+.directive-red {
+  color: #dc2626;
+}
+.prose .directive-blue,
+.directive-blue {
+  color: #2563eb;
+}
+.prose .directive-green,
+.directive-green {
+  color: #16a34a;
+}
+.prose .directive-yellow,
+.directive-yellow {
+  color: #ca8a04;
+}
+.prose .directive-orange,
+.directive-orange {
+  color: #ea580c;
+}
+.prose .directive-pink,
+.directive-pink {
+  color: #db2777;
+}
+.prose .directive-purple,
+.directive-purple {
+  color: #9333ea;
+}
+.prose .directive-gray,
+.directive-gray {
+  color: #78716c;
+}
+
 /* 全体の基本スタイル */
 body {
   background: var(--background);
