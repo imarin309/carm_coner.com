@@ -3,7 +3,7 @@
  * カバー画像を1200x675px WebP形式に変換するスクリプト（GUI版）
  *
  * 使用方法:
- *   node scripts/convertImage/convert-cover-image-gui.mjs
+ *   npx tsx scripts/convertImage/convert-cover-image-gui.mts
  *
  * scripts/convertImage/data/ 配下の画像ファイルを順番に処理します。
  * ブラウザが開き、ドラッグで切り取り領域を選択できます。
@@ -31,8 +31,19 @@ const OUTPUT_DIR = path.join(__dirname, "dataEdited");
 // 対応する画像拡張子
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
+type ActionResult = { action: "converted" | "skipped" | "cancelled" };
+
+type ConvertRequest = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  targetW: number;
+  targetH: number;
+};
+
 // dataディレクトリ内の画像ファイルを取得
-function getImageFiles() {
+function getImageFiles(): string[] {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
     return [];
@@ -48,20 +59,24 @@ function getImageFiles() {
 }
 
 // MIMEタイプを取得
-function getMimeType(filePath) {
+function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();
-  const mimeTypes = {
+  const mimeTypes: Record<string, string> = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".png": "image/png",
     ".gif": "image/gif",
     ".webp": "image/webp",
   };
-  return mimeTypes[ext] || "application/octet-stream";
+  return mimeTypes[ext] ?? "application/octet-stream";
 }
 
 // 1つの画像を処理
-async function processImage(inputPath, currentIndex, totalCount) {
+async function processImage(
+  inputPath: string,
+  currentIndex: number,
+  totalCount: number,
+): Promise<ActionResult> {
   // 出力ディレクトリを作成
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -72,8 +87,8 @@ async function processImage(inputPath, currentIndex, totalCount) {
   const outputPath = path.join(OUTPUT_DIR, outputFileName);
 
   const metadata = await sharp(inputPath).metadata();
-  const imageWidth = metadata.width;
-  const imageHeight = metadata.height;
+  const imageWidth = metadata.width!;
+  const imageHeight = metadata.height!;
 
   console.log(
     `\n[${currentIndex + 1}/${totalCount}] 処理中: ${inputParsed.base}`,
@@ -82,7 +97,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
 
   return new Promise((resolve) => {
     // HTMLページを生成
-    function generateHTML() {
+    function generateHTML(): string {
       return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -129,6 +144,21 @@ async function processImage(inputPath, currentIndex, totalCount) {
       border: 2px dashed #fff;
       pointer-events: none;
     }
+    .resize-handle {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border: 2px solid #333;
+      border-radius: 2px;
+      pointer-events: all;
+      z-index: 10;
+      transform: translate(-50%, -50%);
+    }
+    .handle-nw { cursor: nw-resize; }
+    .handle-ne { cursor: ne-resize; }
+    .handle-sw { cursor: sw-resize; }
+    .handle-se { cursor: se-resize; }
     .mode-buttons {
       margin-top: 15px;
       display: flex;
@@ -190,6 +220,10 @@ async function processImage(inputPath, currentIndex, totalCount) {
     <div class="overlay overlay-left" id="overlayLeft"></div>
     <div class="overlay overlay-right" id="overlayRight"></div>
     <div class="crop-area" id="cropArea"></div>
+    <div class="resize-handle handle-nw" id="handleNW"></div>
+    <div class="resize-handle handle-ne" id="handleNE"></div>
+    <div class="resize-handle handle-sw" id="handleSW"></div>
+    <div class="resize-handle handle-se" id="handleSE"></div>
   </div>
 
   <div class="mode-buttons" id="modeButtons">
@@ -215,6 +249,10 @@ async function processImage(inputPath, currentIndex, totalCount) {
     const overlayLeft = document.getElementById('overlayLeft');
     const overlayRight = document.getElementById('overlayRight');
     const cropArea = document.getElementById('cropArea');
+    const handleNW = document.getElementById('handleNW');
+    const handleNE = document.getElementById('handleNE');
+    const handleSW = document.getElementById('handleSW');
+    const handleSE = document.getElementById('handleSE');
     const status = document.getElementById('status');
     const infoText = document.getElementById('infoText');
     const modeButtons = document.getElementById('modeButtons').querySelectorAll('.btn-mode');
@@ -232,6 +270,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
     let displayWidth, displayHeight;
     let cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
     let isDragging = false;
+    let resizeHandle = null;
     let startPos, startCropPos;
 
     preview.onload = () => {
@@ -270,6 +309,15 @@ async function processImage(inputPath, currentIndex, totalCount) {
       overlayRight.style.top = cropY + 'px';
       overlayRight.style.width = (displayWidth - cropX - cropWidth) + 'px';
       overlayRight.style.height = cropHeight + 'px';
+
+      handleNW.style.left = cropX + 'px';
+      handleNW.style.top = cropY + 'px';
+      handleNE.style.left = (cropX + cropWidth) + 'px';
+      handleNE.style.top = cropY + 'px';
+      handleSW.style.left = cropX + 'px';
+      handleSW.style.top = (cropY + cropHeight) + 'px';
+      handleSE.style.left = (cropX + cropWidth) + 'px';
+      handleSE.style.top = (cropY + cropHeight) + 'px';
     }
 
     function setMode(index) {
@@ -278,9 +326,22 @@ async function processImage(inputPath, currentIndex, totalCount) {
         btn.classList.toggle('active', i === index);
       });
       const m = currentMode();
-      infoText.textContent = 'ドラッグで移動 | 出力: ' + m.w + 'x' + m.h + 'px';
+      infoText.textContent = 'ドラッグで移動 | コーナーでリサイズ | 出力: ' + m.w + 'x' + m.h + 'px';
       recalcCrop();
     }
+
+    function startResize(dir, e) {
+      resizeHandle = dir;
+      startPos = { x: e.clientX, y: e.clientY };
+      startCropPos = { x: cropX, y: cropY, w: cropWidth, h: cropHeight };
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    handleNW.addEventListener('mousedown', (e) => startResize('nw', e));
+    handleNE.addEventListener('mousedown', (e) => startResize('ne', e));
+    handleSW.addEventListener('mousedown', (e) => startResize('sw', e));
+    handleSE.addEventListener('mousedown', (e) => startResize('se', e));
 
     container.addEventListener('mousedown', (e) => {
       isDragging = true;
@@ -290,6 +351,50 @@ async function processImage(inputPath, currentIndex, totalCount) {
     });
 
     document.addEventListener('mousemove', (e) => {
+      if (resizeHandle) {
+        const dx = e.clientX - startPos.x;
+        const ratio = currentMode().w / currentMode().h;
+        const MIN_SIZE = 40;
+        let newW, newH, newX, newY;
+
+        if (resizeHandle === 'se') {
+          newW = startCropPos.w + dx;
+          newH = newW / ratio;
+          newX = startCropPos.x;
+          newY = startCropPos.y;
+        } else if (resizeHandle === 'sw') {
+          newW = startCropPos.w - dx;
+          newH = newW / ratio;
+          newX = startCropPos.x + startCropPos.w - newW;
+          newY = startCropPos.y;
+        } else if (resizeHandle === 'ne') {
+          newW = startCropPos.w + dx;
+          newH = newW / ratio;
+          newX = startCropPos.x;
+          newY = startCropPos.y + startCropPos.h - newH;
+        } else {
+          newW = startCropPos.w - dx;
+          newH = newW / ratio;
+          newX = startCropPos.x + startCropPos.w - newW;
+          newY = startCropPos.y + startCropPos.h - newH;
+        }
+
+        newW = Math.max(MIN_SIZE, newW);
+        newH = newW / ratio;
+        newX = Math.max(0, Math.min(displayWidth - newW, newX));
+        newY = Math.max(0, Math.min(displayHeight - newH, newY));
+
+        if (newX + newW > displayWidth) newW = displayWidth - newX;
+        if (newY + newH > displayHeight) newH = displayHeight - newY;
+
+        cropX = newX;
+        cropY = newY;
+        cropWidth = newW;
+        cropHeight = newH;
+        updateOverlay();
+        return;
+      }
+
       if (!isDragging) return;
       const dx = e.clientX - startPos.x;
       const dy = e.clientY - startPos.y;
@@ -300,6 +405,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
 
     document.addEventListener('mouseup', () => {
       isDragging = false;
+      resizeHandle = null;
     });
 
     function waitAndReload() {
@@ -368,11 +474,12 @@ async function processImage(inputPath, currentIndex, totalCount) {
         res.end(imageBuffer);
       } else if (req.method === "POST" && req.url === "/convert") {
         let body = "";
-        req.on("data", (chunk) => (body += chunk));
+        req.on("data", (chunk: Buffer) => (body += chunk));
         req.on("end", async () => {
           try {
-            const { top, left, width, height, targetW, targetH } =
-              JSON.parse(body);
+            const { top, left, width, height, targetW, targetH } = JSON.parse(
+              body,
+            ) as ConvertRequest;
 
             await sharp(inputPath)
               .extract({
@@ -381,7 +488,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
                 width: Math.min(width, imageWidth - Math.max(0, left)),
                 height: Math.min(height, imageHeight - Math.max(0, top)),
               })
-              .resize(targetW, targetH)
+              .resize(targetW, targetH, { fit: "fill" })
               .webp({ quality: QUALITY })
               .toFile(outputPath);
 
@@ -394,22 +501,27 @@ async function processImage(inputPath, currentIndex, totalCount) {
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: true, output: outputPath }));
 
+            server.closeAllConnections();
             server.close();
             resolve({ action: "converted" });
           } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
             res.writeHead(500, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: error.message }));
+            res.end(JSON.stringify({ success: false, error: message }));
           }
         });
       } else if (req.method === "POST" && req.url === "/skip") {
         res.writeHead(200);
         res.end();
         console.log(`  スキップしました`);
+        server.closeAllConnections();
         server.close();
         resolve({ action: "skipped" });
       } else if (req.method === "POST" && req.url === "/cancel") {
         res.writeHead(200);
         res.end();
+        server.closeAllConnections();
         server.close();
         resolve({ action: "cancelled" });
       } else {
@@ -441,7 +553,7 @@ async function processImage(inputPath, currentIndex, totalCount) {
 }
 
 // メイン処理
-async function main() {
+async function main(): Promise<void> {
   const imageFiles = getImageFiles();
 
   if (imageFiles.length === 0) {
