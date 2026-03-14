@@ -8,6 +8,8 @@
         "ImageGallery",
         "BeforeAfter",
         "YouTubeCard",
+        "DmmCard",
+        "DmmCardImage",
       ],
     },
   },
