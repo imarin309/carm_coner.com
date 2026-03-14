@@ -21,8 +21,8 @@ interface DmmCardImageProps {
 export function DmmCard({ href, imgSrc, title, price }: DmmCardProps) {
   return (
     <div className="not-prose my-6 rounded-xl border border-accent overflow-hidden shadow-sm relative">
-      <span className="absolute top-1.5 left-2 text-[10px] font-medium text-gray-400 leading-none">
-        ads
+      <span className="absolute top-1.5 left-2 text-[10px] font-medium text-gray-500 border border-gray-300 px-1 rounded leading-none">
+        PR
       </span>
       <a
         href={fixAfId(href)}
@@ -57,8 +57,8 @@ export function DmmCardImage({ href, imgSrc, title }: DmmCardImageProps) {
   return (
     <div className="not-prose my-6 flex justify-center">
       <div className="relative inline-block">
-        <span className="absolute top-1.5 left-2 text-[10px] font-medium text-gray-400 leading-none z-10">
-          ads
+        <span className="absolute top-1.5 left-2 text-[10px] font-medium text-gray-500 border border-gray-300 px-1 rounded leading-none z-10">
+          PR
         </span>
         <a
           href={fixAfId(href)}
