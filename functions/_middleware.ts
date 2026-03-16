@@ -1,5 +1,9 @@
 export async function onRequest(
-  context: EventContext<Record<string, unknown>, string, Record<string, unknown>>
+  context: EventContext<
+    Record<string, unknown>,
+    string,
+    Record<string, unknown>
+  >,
 ) {
   const url = new URL(context.request.url);
 
@@ -10,7 +14,7 @@ export async function onRequest(
   if (parts.length === 3 && url.hostname.endsWith(".pages.dev")) {
     const redirectUrl = new URL(
       url.pathname + url.search,
-      "https://calm-corner.com"
+      "https://calm-corner.com",
     );
     return Response.redirect(redirectUrl.toString(), 301);
   }
