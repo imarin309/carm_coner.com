@@ -16,7 +16,7 @@ export async function onRequest(
       url.pathname + url.search,
       "https://calm-corner.com",
     );
-    return Response.redirect(redirectUrl.toString(), 301);
+    return Response.redirect(redirectUrl.toString(), 308);
   }
 
   return context.next();
