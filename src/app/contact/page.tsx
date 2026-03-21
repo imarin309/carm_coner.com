@@ -35,6 +35,7 @@ export default function ContactPage() {
           href={siteXUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`X (Twitter) を新しいタブで開く`}
           className="group inline-flex flex-col gap-2 border-b border-stone-200 pb-4 transition-colors hover:border-stone-600"
         >
           <span className="text-xs uppercase tracking-widest text-stone-400 transition-colors group-hover:text-stone-600">
