@@ -37,9 +37,6 @@ export default function PrivacyPage() {
         <h1 className="text-2xl font-bold tracking-tight text-stone-800 sm:text-3xl">
           {page.title}
         </h1>
-        {page.description && (
-          <p className="mt-4 text-stone-500">{page.description}</p>
-        )}
       </header>
 
       <div className="prose prose-stone max-w-none prose-headings:font-semibold prose-a:text-stone-600 prose-a:underline-offset-2 hover:prose-a:text-stone-900">
