@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { getAllCategories } from "@/constants/category";
 import { siteInstagramUrl, siteXUrl } from "@/constants/meta";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 const categories = getAllCategories();
 
@@ -13,147 +13,8 @@ const externalLinks = [
 ];
 
 export default function NavBar() {
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const categoryMenuRef = useRef<HTMLDivElement>(null);
-  const categoryButtonRef = useRef<HTMLButtonElement>(null);
-  const categoryItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-
-  const [isLinksOpen, setIsLinksOpen] = useState(false);
-  const linksMenuRef = useRef<HTMLDivElement>(null);
-  const linksButtonRef = useRef<HTMLButtonElement>(null);
-  const linksItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-
-  const closeCategoryMenu = useCallback(() => {
-    setIsCategoryOpen(false);
-    categoryButtonRef.current?.focus();
-  }, []);
-
-  const closeLinksMenu = useCallback(() => {
-    setIsLinksOpen(false);
-    linksButtonRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    if (!isCategoryOpen) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        categoryMenuRef.current &&
-        !categoryMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsCategoryOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isCategoryOpen]);
-
-  useEffect(() => {
-    if (!isLinksOpen) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        linksMenuRef.current &&
-        !linksMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsLinksOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isLinksOpen]);
-
-  function handleCategoryButtonKeyDown(event: React.KeyboardEvent) {
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        setIsCategoryOpen(true);
-        requestAnimationFrame(() => categoryItemRefs.current[0]?.focus());
-        break;
-      case "Escape":
-        if (isCategoryOpen) {
-          event.preventDefault();
-          closeCategoryMenu();
-        }
-        break;
-    }
-  }
-
-  function handleCategoryMenuKeyDown(event: React.KeyboardEvent) {
-    const currentIndex = categoryItemRefs.current.findIndex(
-      (ref) => ref === document.activeElement,
-    );
-
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        if (currentIndex < 0) return;
-        categoryItemRefs.current[
-          (currentIndex + 1) % categories.length
-        ]?.focus();
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        if (currentIndex <= 0) {
-          closeCategoryMenu();
-        } else {
-          categoryItemRefs.current[currentIndex - 1]?.focus();
-        }
-        break;
-      case "Escape":
-        event.preventDefault();
-        closeCategoryMenu();
-        break;
-      case "Tab":
-        setIsCategoryOpen(false);
-        break;
-    }
-  }
-
-  function handleLinksButtonKeyDown(event: React.KeyboardEvent) {
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        setIsLinksOpen(true);
-        requestAnimationFrame(() => linksItemRefs.current[0]?.focus());
-        break;
-      case "Escape":
-        if (isLinksOpen) {
-          event.preventDefault();
-          closeLinksMenu();
-        }
-        break;
-    }
-  }
-
-  function handleLinksMenuKeyDown(event: React.KeyboardEvent) {
-    const currentIndex = linksItemRefs.current.findIndex(
-      (ref) => ref === document.activeElement,
-    );
-
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        if (currentIndex < 0) return;
-        linksItemRefs.current[
-          (currentIndex + 1) % externalLinks.length
-        ]?.focus();
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        if (currentIndex <= 0) {
-          closeLinksMenu();
-        } else {
-          linksItemRefs.current[currentIndex - 1]?.focus();
-        }
-        break;
-      case "Escape":
-        event.preventDefault();
-        closeLinksMenu();
-        break;
-      case "Tab":
-        setIsLinksOpen(false);
-        break;
-    }
-  }
+  const categoryMenu = useDropdownMenu(categories.length);
+  const linksMenu = useDropdownMenu(externalLinks.length);
 
   return (
     <nav className="relative z-50 border-b border-stone-200 bg-white/90 backdrop-blur-sm">
@@ -166,45 +27,49 @@ export default function NavBar() {
             Home
           </Link>
           <div
-            ref={categoryMenuRef}
+            ref={categoryMenu.menuRef}
             className="relative"
-            onMouseEnter={() => setIsCategoryOpen(true)}
+            onMouseEnter={() => categoryMenu.setIsOpen(true)}
             onMouseLeave={() => {
-              if (!categoryMenuRef.current?.contains(document.activeElement)) {
-                setIsCategoryOpen(false);
+              if (
+                !categoryMenu.menuRef.current?.contains(document.activeElement)
+              ) {
+                categoryMenu.setIsOpen(false);
               }
             }}
           >
             <button
-              ref={categoryButtonRef}
-              aria-expanded={isCategoryOpen}
+              ref={categoryMenu.buttonRef}
+              aria-expanded={categoryMenu.isOpen}
               aria-haspopup="true"
-              onClick={() => setIsCategoryOpen((prev) => !prev)}
-              onKeyDown={handleCategoryButtonKeyDown}
+              onClick={() => categoryMenu.setIsOpen((prev) => !prev)}
+              onKeyDown={categoryMenu.handleButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
             >
               Category
             </button>
             <div
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
-                isCategoryOpen ? "visible opacity-100" : "invisible opacity-0"
+                categoryMenu.isOpen
+                  ? "visible opacity-100"
+                  : "invisible opacity-0"
               }`}
             >
               <ul
                 role="menu"
-                onKeyDown={handleCategoryMenuKeyDown}
+                onKeyDown={categoryMenu.handleMenuKeyDown}
                 className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
               >
                 {categories.map((category, index) => (
                   <li key={category.slug} role="none">
                     <Link
                       ref={(el) => {
-                        categoryItemRefs.current[index] = el;
+                        categoryMenu.itemRefs.current[index] = el;
                       }}
                       role="menuitem"
                       tabIndex={-1}
                       href={`/category/${category.slug}`}
-                      onClick={() => setIsCategoryOpen(false)}
+                      onClick={() => categoryMenu.setIsOpen(false)}
                       className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                     >
                       {category.name}
@@ -215,47 +80,48 @@ export default function NavBar() {
             </div>
           </div>
           <div
-            ref={linksMenuRef}
+            ref={linksMenu.menuRef}
             className="relative"
-            onMouseEnter={() => setIsLinksOpen(true)}
+            onMouseEnter={() => linksMenu.setIsOpen(true)}
             onMouseLeave={() => {
-              if (!linksMenuRef.current?.contains(document.activeElement)) {
-                setIsLinksOpen(false);
+              if (!linksMenu.menuRef.current?.contains(document.activeElement)) {
+                linksMenu.setIsOpen(false);
               }
             }}
           >
             <button
-              ref={linksButtonRef}
-              aria-expanded={isLinksOpen}
+              ref={linksMenu.buttonRef}
+              aria-expanded={linksMenu.isOpen}
               aria-haspopup="true"
-              onClick={() => setIsLinksOpen((prev) => !prev)}
-              onKeyDown={handleLinksButtonKeyDown}
+              onClick={() => linksMenu.setIsOpen((prev) => !prev)}
+              onKeyDown={linksMenu.handleButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
             >
               Links
             </button>
             <div
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
-                isLinksOpen ? "visible opacity-100" : "invisible opacity-0"
+                linksMenu.isOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
             >
               <ul
                 role="menu"
-                onKeyDown={handleLinksMenuKeyDown}
+                onKeyDown={linksMenu.handleMenuKeyDown}
                 className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
               >
                 {externalLinks.map(({ label, href }, index) => (
                   <li key={label} role="none">
                     <a
                       ref={(el) => {
-                        linksItemRefs.current[index] = el;
+                        linksMenu.itemRefs.current[index] = el;
                       }}
                       role="menuitem"
                       tabIndex={-1}
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => setIsLinksOpen(false)}
+                      aria-label={`${label}（新しいタブで開く）`}
+                      onClick={() => linksMenu.setIsOpen(false)}
                       className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                     >
                       {label}
