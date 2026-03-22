@@ -56,7 +56,7 @@ export default function NavBar() {
             <button
               ref={categoryButtonRef}
               aria-expanded={isCategoryOpen}
-              aria-haspopup="true"
+              aria-haspopup="menu"
               onClick={() => setCategoryOpen((prev) => !prev)}
               onKeyDown={handleCategoryButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
