@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { siteName, siteXUrl } from "@/constants/meta";
+import { siteName } from "@/constants/meta";
 
 export default function Footer() {
   return (
@@ -11,15 +11,6 @@ export default function Footer() {
         >
           プライバシーポリシー
         </Link>
-        <a
-          href={siteXUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-stone-500 transition-colors hover:text-stone-300"
-          aria-label={`${siteName} の X アカウントを新しいタブで開く`}
-        >
-          <span className="text-sm font-bold">X</span>
-        </a>
       </div>
       <p className="mt-2 text-sm text-stone-400">
         &copy; {new Date().getFullYear()} {siteName}
