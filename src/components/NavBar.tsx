@@ -2,76 +2,36 @@
 
 import Link from "next/link";
 import { getAllCategories } from "@/constants/category";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { siteInstagramUrl, siteXUrl } from "@/constants/meta";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 const categories = getAllCategories();
 
+const externalLinks = [
+  { label: "X", href: siteXUrl },
+  { label: "Instagram", href: siteInstagramUrl },
+];
+
 export default function NavBar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const {
+    isOpen: isCategoryOpen,
+    setIsOpen: setCategoryOpen,
+    menuRef: categoryMenuRef,
+    buttonRef: categoryButtonRef,
+    itemRefs: categoryItemRefs,
+    handleButtonKeyDown: handleCategoryButtonKeyDown,
+    handleMenuKeyDown: handleCategoryMenuKeyDown,
+  } = useDropdownMenu(categories.length);
 
-  const closeMenu = useCallback(() => {
-    setIsOpen(false);
-    buttonRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  function handleButtonKeyDown(event: React.KeyboardEvent) {
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        setIsOpen(true);
-        requestAnimationFrame(() => itemRefs.current[0]?.focus());
-        break;
-      case "Escape":
-        if (isOpen) {
-          event.preventDefault();
-          closeMenu();
-        }
-        break;
-    }
-  }
-
-  function handleMenuKeyDown(event: React.KeyboardEvent) {
-    const currentIndex = itemRefs.current.findIndex(
-      (ref) => ref === document.activeElement,
-    );
-
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        if (currentIndex < 0) return;
-        itemRefs.current[(currentIndex + 1) % categories.length]?.focus();
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        if (currentIndex <= 0) {
-          closeMenu();
-        } else {
-          itemRefs.current[currentIndex - 1]?.focus();
-        }
-        break;
-      case "Escape":
-        event.preventDefault();
-        closeMenu();
-        break;
-      case "Tab":
-        setIsOpen(false);
-        break;
-    }
-  }
+  const {
+    isOpen: isLinksOpen,
+    setIsOpen: setLinksOpen,
+    menuRef: linksMenuRef,
+    buttonRef: linksButtonRef,
+    itemRefs: linksItemRefs,
+    handleButtonKeyDown: handleLinksButtonKeyDown,
+    handleMenuKeyDown: handleLinksMenuKeyDown,
+  } = useDropdownMenu(externalLinks.length);
 
   return (
     <nav className="relative z-50 border-b border-stone-200 bg-white/90 backdrop-blur-sm">
@@ -84,49 +44,101 @@ export default function NavBar() {
             Home
           </Link>
           <div
-            ref={menuRef}
+            ref={categoryMenuRef}
             className="relative"
-            onMouseEnter={() => setIsOpen(true)}
+            onMouseEnter={() => setCategoryOpen(true)}
             onMouseLeave={() => {
-              if (!menuRef.current?.contains(document.activeElement)) {
-                setIsOpen(false);
+              if (!categoryMenuRef.current?.contains(document.activeElement)) {
+                setCategoryOpen(false);
               }
             }}
           >
             <button
-              ref={buttonRef}
-              aria-expanded={isOpen}
-              aria-haspopup="true"
-              onClick={() => setIsOpen((prev) => !prev)}
-              onKeyDown={handleButtonKeyDown}
+              ref={categoryButtonRef}
+              aria-expanded={isCategoryOpen}
+              aria-haspopup="menu"
+              onClick={() => setCategoryOpen((prev) => !prev)}
+              onKeyDown={handleCategoryButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
             >
               Category
             </button>
             <div
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
-                isOpen ? "visible opacity-100" : "invisible opacity-0"
+                isCategoryOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
             >
               <ul
                 role="menu"
-                onKeyDown={handleMenuKeyDown}
+                onKeyDown={handleCategoryMenuKeyDown}
                 className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
               >
                 {categories.map((category, index) => (
                   <li key={category.slug} role="none">
                     <Link
                       ref={(el) => {
-                        itemRefs.current[index] = el;
+                        categoryItemRefs.current[index] = el;
                       }}
                       role="menuitem"
                       tabIndex={-1}
                       href={`/category/${category.slug}`}
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => setCategoryOpen(false)}
                       className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                     >
                       {category.name}
                     </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div
+            ref={linksMenuRef}
+            className="relative"
+            onMouseEnter={() => setLinksOpen(true)}
+            onMouseLeave={() => {
+              if (!linksMenuRef.current?.contains(document.activeElement)) {
+                setLinksOpen(false);
+              }
+            }}
+          >
+            <button
+              ref={linksButtonRef}
+              aria-expanded={isLinksOpen}
+              aria-haspopup="menu"
+              onClick={() => setLinksOpen((prev) => !prev)}
+              onKeyDown={handleLinksButtonKeyDown}
+              className="text-stone-600 transition-colors hover:text-stone-900"
+            >
+              Links
+            </button>
+            <div
+              className={`absolute left-0 top-full z-50 pt-2 transition-all ${
+                isLinksOpen ? "visible opacity-100" : "invisible opacity-0"
+              }`}
+            >
+              <ul
+                role="menu"
+                onKeyDown={handleLinksMenuKeyDown}
+                className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
+              >
+                {externalLinks.map(({ label, href }, index) => (
+                  <li key={label} role="none">
+                    <a
+                      ref={(el) => {
+                        linksItemRefs.current[index] = el;
+                      }}
+                      role="menuitem"
+                      tabIndex={-1}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${label}（新しいタブで開く）`}
+                      onClick={() => setLinksOpen(false)}
+                      className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                    >
+                      {label}
+                    </a>
                   </li>
                 ))}
               </ul>
