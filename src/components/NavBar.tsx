@@ -105,7 +105,7 @@ export default function NavBar() {
             <button
               ref={linksButtonRef}
               aria-expanded={isLinksOpen}
-              aria-haspopup="true"
+              aria-haspopup="menu"
               onClick={() => setLinksOpen((prev) => !prev)}
               onKeyDown={handleLinksButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
