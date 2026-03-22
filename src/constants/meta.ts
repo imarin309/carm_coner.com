@@ -6,5 +6,7 @@ export const siteUrl = "https://calm-corner.com";
 export const siteAuthor = "imarin";
 export const siteXUrl = "https://x.com/imarin309";
 export const siteXId = "@imarin309";
+export const siteInstagramUrl = "https://www.instagram.com/imarin309";
+export const siteInstagramId = "imarin309";
 export const siteEmail = "contact@calm-corner.com";
 export const dmmAfId = "imarin-003";
