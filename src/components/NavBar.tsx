@@ -13,8 +13,25 @@ const externalLinks = [
 ];
 
 export default function NavBar() {
-  const categoryMenu = useDropdownMenu(categories.length);
-  const linksMenu = useDropdownMenu(externalLinks.length);
+  const {
+    isOpen: isCategoryOpen,
+    setIsOpen: setCategoryOpen,
+    menuRef: categoryMenuRef,
+    buttonRef: categoryButtonRef,
+    itemRefs: categoryItemRefs,
+    handleButtonKeyDown: handleCategoryButtonKeyDown,
+    handleMenuKeyDown: handleCategoryMenuKeyDown,
+  } = useDropdownMenu(categories.length);
+
+  const {
+    isOpen: isLinksOpen,
+    setIsOpen: setLinksOpen,
+    menuRef: linksMenuRef,
+    buttonRef: linksButtonRef,
+    itemRefs: linksItemRefs,
+    handleButtonKeyDown: handleLinksButtonKeyDown,
+    handleMenuKeyDown: handleLinksMenuKeyDown,
+  } = useDropdownMenu(externalLinks.length);
 
   return (
     <nav className="relative z-50 border-b border-stone-200 bg-white/90 backdrop-blur-sm">
@@ -27,49 +44,45 @@ export default function NavBar() {
             Home
           </Link>
           <div
-            ref={categoryMenu.menuRef}
+            ref={categoryMenuRef}
             className="relative"
-            onMouseEnter={() => categoryMenu.setIsOpen(true)}
+            onMouseEnter={() => setCategoryOpen(true)}
             onMouseLeave={() => {
-              if (
-                !categoryMenu.menuRef.current?.contains(document.activeElement)
-              ) {
-                categoryMenu.setIsOpen(false);
+              if (!categoryMenuRef.current?.contains(document.activeElement)) {
+                setCategoryOpen(false);
               }
             }}
           >
             <button
-              ref={categoryMenu.buttonRef}
-              aria-expanded={categoryMenu.isOpen}
+              ref={categoryButtonRef}
+              aria-expanded={isCategoryOpen}
               aria-haspopup="true"
-              onClick={() => categoryMenu.setIsOpen((prev) => !prev)}
-              onKeyDown={categoryMenu.handleButtonKeyDown}
+              onClick={() => setCategoryOpen((prev) => !prev)}
+              onKeyDown={handleCategoryButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
             >
               Category
             </button>
             <div
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
-                categoryMenu.isOpen
-                  ? "visible opacity-100"
-                  : "invisible opacity-0"
+                isCategoryOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
             >
               <ul
                 role="menu"
-                onKeyDown={categoryMenu.handleMenuKeyDown}
+                onKeyDown={handleCategoryMenuKeyDown}
                 className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
               >
                 {categories.map((category, index) => (
                   <li key={category.slug} role="none">
                     <Link
                       ref={(el) => {
-                        categoryMenu.itemRefs.current[index] = el;
+                        categoryItemRefs.current[index] = el;
                       }}
                       role="menuitem"
                       tabIndex={-1}
                       href={`/category/${category.slug}`}
-                      onClick={() => categoryMenu.setIsOpen(false)}
+                      onClick={() => setCategoryOpen(false)}
                       className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                     >
                       {category.name}
@@ -80,40 +93,40 @@ export default function NavBar() {
             </div>
           </div>
           <div
-            ref={linksMenu.menuRef}
+            ref={linksMenuRef}
             className="relative"
-            onMouseEnter={() => linksMenu.setIsOpen(true)}
+            onMouseEnter={() => setLinksOpen(true)}
             onMouseLeave={() => {
-              if (!linksMenu.menuRef.current?.contains(document.activeElement)) {
-                linksMenu.setIsOpen(false);
+              if (!linksMenuRef.current?.contains(document.activeElement)) {
+                setLinksOpen(false);
               }
             }}
           >
             <button
-              ref={linksMenu.buttonRef}
-              aria-expanded={linksMenu.isOpen}
+              ref={linksButtonRef}
+              aria-expanded={isLinksOpen}
               aria-haspopup="true"
-              onClick={() => linksMenu.setIsOpen((prev) => !prev)}
-              onKeyDown={linksMenu.handleButtonKeyDown}
+              onClick={() => setLinksOpen((prev) => !prev)}
+              onKeyDown={handleLinksButtonKeyDown}
               className="text-stone-600 transition-colors hover:text-stone-900"
             >
               Links
             </button>
             <div
               className={`absolute left-0 top-full z-50 pt-2 transition-all ${
-                linksMenu.isOpen ? "visible opacity-100" : "invisible opacity-0"
+                isLinksOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
             >
               <ul
                 role="menu"
-                onKeyDown={linksMenu.handleMenuKeyDown}
+                onKeyDown={handleLinksMenuKeyDown}
                 className="min-w-40 border border-stone-200 bg-white py-1 shadow-md"
               >
                 {externalLinks.map(({ label, href }, index) => (
                   <li key={label} role="none">
                     <a
                       ref={(el) => {
-                        linksMenu.itemRefs.current[index] = el;
+                        linksItemRefs.current[index] = el;
                       }}
                       role="menuitem"
                       tabIndex={-1}
@@ -121,7 +134,7 @@ export default function NavBar() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${label}（新しいタブで開く）`}
-                      onClick={() => linksMenu.setIsOpen(false)}
+                      onClick={() => setLinksOpen(false)}
                       className="block px-4 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                     >
                       {label}

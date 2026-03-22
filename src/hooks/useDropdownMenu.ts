@@ -16,10 +16,7 @@ export function useDropdownMenu(itemCount: number) {
   useEffect(() => {
     if (!isOpen) return;
     function handleClickOutside(event: MouseEvent) {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
